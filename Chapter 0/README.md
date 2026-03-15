@@ -1,0 +1,21 @@
+## 카프카 주요 CLI
+
+- 컨테이너 접속
+    - docker exec -it kafka bash
+- 컨슈머 그룹 목록
+    - /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list
+- 토픽 관련
+    - 토픽 생성
+        - /opt/kafka/bin/kafka-topics.sh --create --topic new-topic --partitions 3 --replication-factor 1 --bootstrap-server localhost:9092
+    - 토픽 목록 보기
+        - /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+    - 특정 토픽 상세 정보
+        - /opt/kafka/bin/kafka-topics.sh --describe --topic new-topic --bootstrap-server localhost:9092
+    - 토픽삭제
+        - /opt/kafka/bin/kafka-topics.sh --delete --topic new-topic --bootstrap-server localhost:9092
+- 메시지 관련
+    - 메시지 생산 (Producer)
+        - /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic new-topic → 메시지 입력모드에서 메시지 입력
+        - {"name":"hongildong1", "email":"test1@naver.com","age" : 15}
+    - 전체 메시지 listen(읽기)
+        - /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic new-topic --from-beginning
