@@ -1,0 +1,23 @@
+## 메시지 실패 처리
+
+- offset 자동 커밋(기본값 enable.auto.commit=true)
+    - 메시지 수신 후 정상처리여부와 상관없이 Kafka가 주기적으로 offset을 자동 커밋
+    - 이경우, 서버 재시작 시 commit된 offset 이후 메시지부터 읽음
+    - 로그수집과 같은 메시지 유실이 가능한 업무 상황에 적합
+- offset 수동 커밋(enable.auto.commit=false )
+    - 메시지 처리 성공 시점에 개발자가 직접 commit
+    - 이경우, 서버 재시작 시 commit되지 않은, 메시지부터 읽음
+    - offset 수동 커밋의 한계
+        - 예외가 발생될 경우 spring kafka에서 강제로 offset commit을 수행
+            - 반드시 적절한 예외처리 필요
+        - 메시지 처리 실패 후 서버가 재시작되지 않고, 그 다음메시지가 정상 커밋되면 실패된 메시지가 재처리 되지 않고, 수동커밋이 무의미해짐
+            - 실패메시지를 별도의 토픽으로 발행하고, 별도의 consumer에서 재처리(DLQ - Dead Letter Queue 설계)
+            - 수동커밋 + DLQ 설계를 통해 안정적 메시지 재처리 매커니즘 확보
+    - 수동커밋 작업절차
+        - application.yml
+            - enable.auto.commit=false 로 기본 설정 변경
+        - 빈객체 생성 설정
+            - 메시지 커밋 수동 설정
+        - 리스너 내 비즈니스 로직
+            - 수동 commit 코드 추가
+            - 예외처리 및 DLQ 설계
